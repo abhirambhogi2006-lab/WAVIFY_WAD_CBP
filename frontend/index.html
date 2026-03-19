@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wavify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="left-half">
+            <div class="logo">
+                <svg class="logo-svg" id="logoSvg" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="22" cy="22" r="21" fill="#21a600" />
+                    <rect class="logo-bar" id="lb1" x="8"  y="18" width="4" height="8"  rx="2" fill="white"/>
+                    <rect class="logo-bar" id="lb2" x="14" y="13" width="4" height="18" rx="2" fill="white"/>
+                    <rect class="logo-bar" id="lb3" x="20" y="9"  width="4" height="26" rx="2" fill="white"/>
+                    <rect class="logo-bar" id="lb4" x="26" y="13" width="4" height="18" rx="2" fill="white"/>
+                    <rect class="logo-bar" id="lb5" x="32" y="18" width="4" height="8"  rx="2" fill="white"/>
+                </svg>
+                <span class="logo-text">Wavify</span>
+            </div>
+            <div class="home-icon"><i class="fa-solid fa-house"></i></div>
+            <div class="search-bar">
+                <div class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+                <input type="text" class="input-box" placeholder="What do you want to play?" autocomplete="off">
+                <div class="browse"><i class="fa-solid fa-folder-open"></i></div>
+            </div>
+        </div>
+        <div class="right-half">
+            <div class="right-half-p1">
+                <p class="nav-text" id="premiumBtn">✦ Premium</p>
+                <p class="nav-text" id="assistantBtn">🎵 Assistant</p>
+                <p class="nav-text">Download</p>
+            </div>
+            <div class="right-half-p2">
+                <div class="nav-text" id="navSignup">Sign up</div>
+                <button class="login-btn" id="navLogin">Log in</button>
+                <div class="user-info hidden" id="userInfo">
+                    <i class="fa-solid fa-circle-user user-avatar" id="userAvatarIcon"></i>
+                <img class="user-avatar-img hidden" id="userAvatarImg" alt="avatar">
+                    <span id="loggedUsername"></span>
+                    <button class="logout-btn" id="logoutBtn">Log out</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main - left part -->
+    <div class="main">
+        <div class="main-left-part">
+            <div class="library">
+                <div class="library-title">
+                    <i class="fa-solid fa-music library-icon"></i>
+                    <p>Your Library</p>
+                </div>
+                <div class="library-add" id="libraryAddBtn" title="Create playlist"><i class="fa-solid fa-plus"></i></div>
+            </div>
+
+            <div class="box-container">
+                <!-- Guest state -->
+                <div class="lib-guest" id="libGuest">
+                    <div class="lib-guest-icon"><i class="fa-solid fa-headphones"></i></div>
+                    <p class="lib-guest-title">Your playlists live here</p>
+                    <p class="lib-guest-sub">Log in to create and view your playlists</p>
+                    <button class="lib-login-btn" id="libLoginBtn">Log in</button>
+                </div>
+
+                <!-- Logged in: playlist grid -->
+                <div class="lib-playlists hidden" id="libPlaylists">
+                    <div class="lib-empty hidden" id="libEmpty">
+                        <div class="lib-empty-icon"><i class="fa-solid fa-compact-disc fa-spin"></i></div>
+                        <p>No playlists yet</p>
+                        <span>Hit <b>+</b> to create one</span>
+                    </div>
+                    <div class="lib-grid" id="libGrid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main: right part -->
+
+        <div class="main-right-part">
+            <div class="music-section">
+                <h2>🔥 Popular Right Now</h2>
+                <div class="songs">
+                    <div class="music-card">
+                        <img src="Images/1.jpg">
+                        <div class="music-play-btn"><i id="1" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Die With A Smile</div>
+                        <div class="img-description">Lady Gaga & Bruno Mars</div>
+                    </div>
+                    <div class="music-card">
+                        <img src="Images/2.jpg">
+                        <div class="music-play-btn"><i id="2" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Shape of You</div>
+                        <div class="img-description">Ed Sheeran</div>
+                    </div>
+                    <div class="music-card">
+                        <img src="Images/3.jpg">
+                        <div class="music-play-btn"><i id="3" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Stay</div>
+                        <div class="img-description">The Kid LAROI & Justin Bieber</div>
+                    </div>
+                    <div class="music-card">
+                        <img src="Images/4.jpg">
+                        <div class="music-play-btn"><i id="4" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Levitating</div>
+                        <div class="img-description">Dua Lipa ft. DaBaby</div>
+                    </div>
+                    <div class="music-card">
+                        <img src="Images/5.jpg">
+                        <div class="music-play-btn"><i id="5" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Peaches</div>
+                        <div class="img-description">Justin Bieber ft. Daniel Caesar</div>
+                    </div>
+                    <div class="music-card">
+                        <img src="Images/6.jpg">
+                        <div class="music-play-btn"><i id="6" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Good 4 U</div>
+                        <div class="img-description">Olivia Rodrigo</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="music-section">
+                <h2>⭐ Recommended For You</h2>
+                <div class="songs">
+                    <div class="music-card">
+                        <img src="Images/7.jpg">
+                        <div class="music-play-btn"><i id="7" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Montero</div>
+                        <div class="img-description">Lil Nas X</div>
+                    </div>
+                    <div class="music-card">
+                        <img src="Images/8.jpg">
+                        <div class="music-play-btn"><i id="8" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Save Your Tears</div>
+                        <div class="img-description">The Weeknd & Ariana Grande</div>
+                    </div>
+                    <div class="music-card">
+                        <img src="Images/9.jpg">
+                        <div class="music-play-btn"><i id="9" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Butter</div>
+                        <div class="img-description">BTS</div>
+                    </div>
+                    <div class="music-card">
+                        <img src="Images/10.jpg">
+                        <div class="music-play-btn"><i id="10" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Dynamite</div>
+                        <div class="img-description">BTS</div>
+                    </div>
+                    <div class="music-card">
+                        <img src="Images/11.jpg">
+                        <div class="music-play-btn"><i id="11" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Watermelon Sugar</div>
+                        <div class="img-description">Harry Styles</div>
+                    </div>
+                    <div class="music-card">
+                        <img src="Images/12.jpg">
+                        <div class="music-play-btn"><i id="12" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">drivers license</div>
+                        <div class="img-description">Olivia Rodrigo</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="music-section">
+                <h2>🕒 Recently Played</h2>
+                <div class="songs">
+                    <div class="music-card">
+                        <img src="Images/13.jpg">
+                        <div class="music-play-btn"><i id="13" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Mood</div>
+                        <div class="img-description">24kGoldn ft. iann dior</div>
+                    </div>
+                    <div class="music-card">
+                        <img src="Images/14.jpg">
+                        <div class="music-play-btn"><i id="14" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Positions</div>
+                        <div class="img-description">Ariana Grande</div>
+                    </div>
+                    <div class="music-card">
+                        <img src="Images/15.jpg">
+                        <div class="music-play-btn"><i id="15" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Therefore I Am</div>
+                        <div class="img-description">Billie Eilish</div>
+                    </div>
+                    <div class="music-card">
+                        <img src="Images/16.jpg">
+                        <div class="music-play-btn"><i id="16" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Happier Than Ever</div>
+                        <div class="img-description">Billie Eilish</div>
+                    </div>
+                    <div class="music-card">
+                        <img src="Images/17.jpg">
+                        <div class="music-play-btn"><i id="17" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Heat Waves</div>
+                        <div class="img-description">Glass Animals</div>
+                    </div>
+                    <div class="music-card">
+                        <img src="Images/18.jpg">
+                        <div class="music-play-btn"><i id="18" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">As It Was</div>
+                        <div class="img-description">Harry Styles</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- player -->
+    <div class="player-bar">
+        <canvas id="visualizer"></canvas>
+        <div class="now-bar">
+            <img src="Images/1.jpg" alt="">
+            <div>
+                <div class="img-title-info">Title 1</div>
+                <div class="img-des-info">this is description for title 1 song</div>
+            </div>
+        </div>
+        <div class="music-controller">
+            <div class="player">
+                <div><i id="shuffle" class="player-btns fa-solid fa-shuffle"></i></div>
+                <div><i id="backward" class="player-btns fa-solid fa-backward-step"></i></div>
+                <div><i id="play" class="player-btns fa-solid fa-circle-play"></i></div>
+                <div><i id="forward" class="player-btns fa-solid fa-forward-step"></i></div>
+                <div><i id="repeat" class="player-btns fa-solid fa-repeat"></i></div>
+            </div>
+
+            <div>
+                <input type="range" id="progressBar" value="0">
+            </div>
+        </div>
+        <div></div>
+    </div>
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal-overlay">
+        <div class="auth-modal-box">
+            <!-- Left branding panel -->
+            <div class="auth-left">
+                <div class="auth-brand-logo">
+                    <svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="22" cy="22" r="21" fill="rgba(255,255,255,0.15)"/>
+                        <rect x="8"  y="18" width="4" height="8"  rx="2" fill="white"/>
+                        <rect x="14" y="13" width="4" height="18" rx="2" fill="white"/>
+                        <rect x="20" y="9"  width="4" height="26" rx="2" fill="white"/>
+                        <rect x="26" y="13" width="4" height="18" rx="2" fill="white"/>
+                        <rect x="32" y="18" width="4" height="8"  rx="2" fill="white"/>
+                    </svg>
+                    <span class="auth-brand-name">Wavify</span>
+                </div>
+                <p class="auth-brand-tagline">Your music, your world.<br>Stream anything, anytime.</p>
+                <div class="auth-waves">
+                    <span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span>
+                </div>
+            </div>
+            <!-- Right form panel -->
+            <div class="auth-right">
+                <i class="fa-solid fa-xmark modal-close" id="closeAuthModal"></i>
+                <h3 id="authTitle">Welcome back</h3>
+                <p class="auth-subtitle">Log in to access your playlists</p>
+                <p class="auth-error hidden" id="authError"></p>
+                <div class="auth-input-group">
+                    <label class="auth-input-label">Username</label>
+                    <div class="auth-input-wrap">
+                        <input type="text" id="authUsername" placeholder="Enter your username" autocomplete="username">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                </div>
+                <div class="auth-input-group">
+                    <label class="auth-input-label">Password</label>
+                    <div class="auth-input-wrap">
+                        <input type="password" id="authPassword" placeholder="Enter your password" autocomplete="current-password">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                </div>
+                <button class="auth-submit-btn" id="authSubmit">Log in</button>
+                <div class="auth-divider"><span>or</span></div>
+                <p class="auth-switch">Don't have an account? <span id="authSwitchLink">Sign up</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Playlist View Panel -->
+    <div id="playlistView" class="playlist-view hidden">
+        <div class="playlist-view-header">
+            <i class="fa-solid fa-arrow-left" id="backToMain"></i>
+            <div class="playlist-view-info">
+                <img id="playlistViewCover" src="" alt="">
+                <div>
+                    <h2 id="playlistViewName"></h2>
+                    <p id="playlistViewCount"></p>
+                    <button id="playlistViewDelete" class="pl-delete-playlist-btn"><i class="fa-solid fa-trash"></i> Delete Playlist</button>
+                </div>
+            </div>
+        </div>
+        <div id="playlistViewSongs" class="playlist-view-songs"></div>
+    </div>
+
+    <!-- Create Playlist Modal -->
+    <div id="playlistModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Create Playlist</h3>
+                <i class="fa-solid fa-xmark modal-close" id="closeModal"></i>
+            </div>
+            <input type="text" id="playlistName" class="playlist-input" placeholder="Playlist name">
+            <p class="modal-label">Select songs</p>
+            <div class="song-list" id="songList"></div>
+            <button class="modal-create-btn" id="confirmCreate">Create</button>
+        </div>
+    </div>
+
+    <!-- Theme Modal -->
+    <div class="theme-modal-overlay" id="themeModal">
+        <div class="theme-modal-box">
+            <div class="theme-modal-header">
+                <span>✦ Premium</span>
+                <i class="fa-solid fa-xmark theme-close" id="themeClose"></i>
+            </div>
+
+            <!-- Themes Section -->
+            <p class="theme-section-label">🎨 Choose Your Theme</p>
+            <p class="theme-subtitle">Pick a vibe. Saved just for you.</p>
+            <div class="theme-grid">
+                <div class="theme-card" data-theme="default">
+                    <div class="theme-preview default-preview"></div>
+                    <span>Wavify Green</span>
+                </div>
+                <div class="theme-card" data-theme="ocean">
+                    <div class="theme-preview ocean-preview"></div>
+                    <span>Ocean Blue</span>
+                </div>
+                <div class="theme-card" data-theme="sunset">
+                    <div class="theme-preview sunset-preview"></div>
+                    <span>Sunset Orange</span>
+                </div>
+                <div class="theme-card" data-theme="galaxy">
+                    <div class="theme-preview galaxy-preview"></div>
+                    <span>Galaxy Purple</span>
+                </div>
+                <div class="theme-card" data-theme="rose">
+                    <div class="theme-preview rose-preview"></div>
+                    <span>Rose Gold</span>
+                </div>
+                <div class="theme-card" data-theme="midnight">
+                    <div class="theme-preview midnight-preview"></div>
+                    <span>Midnight Red</span>
+                </div>
+            </div>
+
+            <!-- Avatar Section -->
+            <p class="theme-section-label" style="margin-top:1.5rem">🧑‍🎤 Choose Your Avatar</p>
+            <p class="theme-subtitle">Your profile pic across Wavify.</p>
+            <div class="avatar-grid" id="avatarGrid">
+                <div class="avatar-option" data-avatar="adventurer/Aneka">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Aneka&backgroundColor=b6e3f4" alt="">
+                </div>
+                <div class="avatar-option" data-avatar="adventurer/Felix">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Felix&backgroundColor=c0aede" alt="">
+                </div>
+                <div class="avatar-option" data-avatar="adventurer/Mia">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mia&backgroundColor=ffd5dc" alt="">
+                </div>
+                <div class="avatar-option" data-avatar="adventurer/Zoe">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Zoe&backgroundColor=d1f4d1" alt="">
+                </div>
+                <div class="avatar-option" data-avatar="adventurer/Leo">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Leo&backgroundColor=ffdfbf" alt="">
+                </div>
+                <div class="avatar-option" data-avatar="adventurer/Luna">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Luna&backgroundColor=e8d5f5" alt="">
+                </div>
+                <div class="avatar-option" data-avatar="fun-emoji/Nala">
+                    <img src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Nala" alt="">
+                </div>
+                <div class="avatar-option" data-avatar="fun-emoji/Coco">
+                    <img src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Coco" alt="">
+                </div>
+                <div class="avatar-option" data-avatar="fun-emoji/Roxy">
+                    <img src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Roxy" alt="">
+                </div>
+                <div class="avatar-option" data-avatar="lorelei/Jasper">
+                    <img src="https://api.dicebear.com/7.x/lorelei/svg?seed=Jasper&backgroundColor=b6e3f4" alt="">
+                </div>
+                <div class="avatar-option" data-avatar="lorelei/Nova">
+                    <img src="https://api.dicebear.com/7.x/lorelei/svg?seed=Nova&backgroundColor=ffd5dc" alt="">
+                </div>
+                <div class="avatar-option" data-avatar="lorelei/Orion">
+                    <img src="https://api.dicebear.com/7.x/lorelei/svg?seed=Orion&backgroundColor=c0aede" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Now Playing Full Screen -->
+    <div class="np-overlay hidden" id="npOverlay">
+        <canvas id="npVisualizer"></canvas>
+
+        <!-- floating notes -->
+        <div class="np-notes" id="npNotes"></div>
+
+        <button class="np-close" id="npClose"><i class="fa-solid fa-chevron-down"></i></button>
+
+        <div class="np-content">
+            <!-- Album Art -->
+            <div class="np-art-wrap">
+                <div class="np-art-glow" id="npGlow"></div>
+                <img class="np-art" id="npArt" src="Images/1.jpg" alt="">
+            </div>
+
+            <!-- Song Info + Controls -->
+            <div class="np-info-wrap">
+                <div class="np-song-name" id="npSongName">Song Name</div>
+                <div class="np-song-des"  id="npSongDes">Artist</div>
+
+                <!-- Progress -->
+                <div class="np-progress-wrap">
+                    <span class="np-time" id="npCurrent">0:00</span>
+                    <input type="range" class="np-progress" id="npProgress" value="0" min="0" max="100">
+                    <span class="np-time" id="npDuration">0:00</span>
+                </div>
+
+                <!-- Controls -->
+                <div class="np-controls">
+                    <i class="fa-solid fa-shuffle np-btn" id="npShuffle"></i>
+                    <i class="fa-solid fa-backward-step np-btn np-btn-mid" id="npPrev"></i>
+                    <i class="fa-solid fa-circle-play np-play-btn" id="npPlay"></i>
+                    <i class="fa-solid fa-forward-step np-btn np-btn-mid" id="npNext"></i>
+                    <i class="fa-solid fa-repeat np-btn" id="npRepeat"></i>
+                </div>
+
+                <!-- Volume -->
+                <div class="np-volume-wrap">
+                    <i class="fa-solid fa-volume-low np-vol-icon"></i>
+                    <input type="range" class="np-volume" id="npVolume" value="100" min="0" max="100">
+                    <i class="fa-solid fa-volume-high np-vol-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Music Assistant Panel -->
+    <div class="assistant-overlay hidden" id="assistantOverlay">
+        <div class="assistant-panel" id="assistantPanel">
+
+            <!-- Header -->
+            <div class="assistant-header">
+                <div class="assistant-header-left">
+                    <div class="assistant-logo">
+                        <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="24" cy="24" r="23" fill="url(#ag)" />
+                            <defs>
+                                <radialGradient id="ag" cx="40%" cy="35%">
+                                    <stop offset="0%" stop-color="var(--accent2)"/>
+                                    <stop offset="100%" stop-color="var(--accent)"/>
+                                </radialGradient>
+                            </defs>
+                            <!-- headphones -->
+                            <path d="M14 26 Q14 16 24 16 Q34 16 34 26" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                            <rect x="10" y="25" width="6" height="9" rx="3" fill="white"/>
+                            <rect x="32" y="25" width="6" height="9" rx="3" fill="white"/>
+                            <!-- sound bars -->
+                            <rect x="20" y="31" width="2.5" height="5" rx="1.2" fill="white" opacity="0.9"/>
+                            <rect x="23.5" y="29" width="2.5" height="7" rx="1.2" fill="white"/>
+                            <rect x="27" y="31" width="2.5" height="5" rx="1.2" fill="white" opacity="0.9"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="assistant-name">Wavify AI</div>
+                        <div class="assistant-status"><span class="assistant-dot"></span>Music Assistant</div>
+                    </div>
+                </div>
+                <i class="fa-solid fa-xmark assistant-close" id="assistantClose"></i>
+            </div>
+
+            <!-- Messages -->
+            <div class="assistant-messages" id="assistantMessages">
+                <!-- welcome injected by JS -->
+            </div>
+
+            <!-- Suggestions -->
+            <div class="assistant-suggestions" id="assistantSuggestions">
+                <button class="sugg-btn" data-q="What are the most popular songs right now?">🔥 Top songs now</button>
+                <button class="sugg-btn" data-q="Recommend me some chill songs">😌 Chill vibes</button>
+                <button class="sugg-btn" data-q="Best songs for working out">💪 Workout hits</button>
+                <button class="sugg-btn" data-q="Top artists of 2024">⭐ Top artists</button>
+                <button class="sugg-btn" data-q="Best pop songs of all time">🎵 Pop classics</button>
+                <button class="sugg-btn" data-q="Songs for a road trip">🚗 Road trip</button>
+            </div>
+
+            <!-- Input -->
+            <div class="assistant-input-row">
+                <input type="text" class="assistant-input" id="assistantInput" placeholder="Ask me anything about music...">
+                <button class="assistant-send" id="assistantSend">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
