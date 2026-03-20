@@ -63,6 +63,7 @@ playMusic.forEach((element) => {
         audio.play();
         updateNowBar();
         addToRecent(songs[index - 1]);
+        incrementPlayCount(songs[index - 1]);
         openNowPlaying();
     })
 });
@@ -207,12 +208,14 @@ playNextSong = () => {
         audio.play();
         updateNowBar();
         addToRecent(order[currentSong-1]);
+        incrementPlayCount(order[currentSong-1]);
     } else {
         audio.src = order[currentSong-1].songPath;
         audio.currentTime = 0;
         audio.play();
         updateNowBar();
         addToRecent(order[currentSong-1]);
+        incrementPlayCount(order[currentSong-1]);
     }
 }
 
@@ -224,6 +227,7 @@ playPrevSong = () => {
     audio.play();
     updateNowBar();
     addToRecent(songs[currentSong-1]);
+    incrementPlayCount(songs[currentSong-1]);
 }
 
 function updateNowBar () {
@@ -601,6 +605,7 @@ function playPlaylistSong(i) {
     play.classList.add('fa-circle-pause');
     updateNowBar_playlist(song);
     addToRecent(song);
+    incrementPlayCount(song);
     highlightPlaylistRow(i);
 }
 
@@ -813,6 +818,7 @@ searchInput.addEventListener('input', () => {
             play.classList.add('fa-circle-pause');
             updateNowBar_playlist(song);
             addToRecent(song);
+            incrementPlayCount(song);
             searchInput.value = '';
             searchDropdown.classList.remove('active');
         });
@@ -1387,6 +1393,54 @@ document.querySelectorAll('.sugg-btn').forEach(btn => {
     btn.addEventListener('click', () => sendMessage(btn.dataset.q));
 });
 
+// ── Playback Speed ──────────────────────────────────────────────────────────────────
+const speedBtn        = document.getElementById('speedBtn');
+const speedDropdown   = document.getElementById('speedDropdown');
+const npSpeedBtn      = document.getElementById('npSpeedBtn');
+const npSpeedDropdown = document.getElementById('npSpeedDropdown');
+
+let currentSpeed = 1;
+
+function setSpeed(speed) {
+    currentSpeed = speed;
+    audio.playbackRate = speed;
+    const label = speed === 1 ? '1x' : speed + 'x';
+    speedBtn.innerText   = label;
+    npSpeedBtn.innerText = label;
+    speedBtn.classList.toggle('speed-active',   speed !== 1);
+    npSpeedBtn.classList.toggle('speed-active', speed !== 1);
+    // mark selected in both dropdowns
+    document.querySelectorAll('.speed-option').forEach(o => {
+        o.classList.toggle('selected', parseFloat(o.dataset.speed) === speed);
+    });
+    speedDropdown.classList.remove('open');
+    npSpeedDropdown.classList.remove('open');
+}
+
+speedBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    speedDropdown.classList.toggle('open');
+    npSpeedDropdown.classList.remove('open');
+});
+
+npSpeedBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    npSpeedDropdown.classList.toggle('open');
+    speedDropdown.classList.remove('open');
+});
+
+document.querySelectorAll('.speed-option').forEach(opt => {
+    opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setSpeed(parseFloat(opt.dataset.speed));
+    });
+});
+
+document.addEventListener('click', () => {
+    speedDropdown.classList.remove('open');
+    npSpeedDropdown.classList.remove('open');
+});
+
 assistantBtn.addEventListener('click', () => {
     assistantOverlay.classList.remove('hidden');
     assistantOverlay.classList.add('visible');
@@ -1399,3 +1453,110 @@ assistantClose.addEventListener('click', () => {
     assistantOverlay.classList.add('hidden');
     assistantOverlay.classList.remove('visible');
 });
+
+// ── My Stats ────────────────────────────────────────────────────────────────────
+const statsBtn     = document.getElementById('statsBtn');
+const statsOverlay = document.getElementById('statsOverlay');
+const statsClose   = document.getElementById('statsClose');
+
+function getPlayCountKey(username) { return `wavify_plays_${username}`; }
+
+function getPlayCounts() {
+    if (!currentUser) return {};
+    return JSON.parse(localStorage.getItem(getPlayCountKey(currentUser)) || '{}');
+}
+
+function incrementPlayCount(song) {
+    if (!currentUser) return;
+    const counts = getPlayCounts();
+    counts[song.songPath] = (counts[song.songPath] || 0) + 1;
+    localStorage.setItem(getPlayCountKey(currentUser), JSON.stringify(counts));
+}
+
+function getVibeFromTopSong(song) {
+    if (!song) return { emoji: '🎵', text: 'Start listening to discover your vibe!' };
+    const name = song.songName.toLowerCase();
+    const des  = song.songDes.toLowerCase();
+    if (['bts','butter','dynamite'].some(k => name.includes(k) || des.includes(k)))
+        return { emoji: '🌟', text: 'K-Pop Stan — You live for the energy!' };
+    if (['billie','olivia','drivers'].some(k => name.includes(k) || des.includes(k)))
+        return { emoji: '🙏', text: 'Emotional Explorer — You feel every lyric.' };
+    if (['ed sheeran','shape','harry'].some(k => name.includes(k) || des.includes(k)))
+        return { emoji: '✨', text: 'Chill Romantic — Soft vibes only.' };
+    if (['gaga','bruno','weeknd','ariana'].some(k => name.includes(k) || des.includes(k)))
+        return { emoji: '🔥', text: 'Pop Royalty — You only play bangers.' };
+    if (['dua','levitat','good 4'].some(k => name.includes(k) || des.includes(k)))
+        return { emoji: '💃', text: 'Dance Floor Regular — Always ready to move!' };
+    return { emoji: '🎧', text: 'Eclectic Listener — Your taste is one of a kind!' };
+}
+
+function openStats() {
+    if (!currentUser) { openAuthModal(true); return; }
+
+    const counts    = getPlayCounts();
+    const playlists = Array.from(document.querySelectorAll('.playlist-entry'));
+    const totalPlays = Object.values(counts).reduce((a, b) => a + b, 0);
+
+    // top cards
+    document.getElementById('statLiked').innerText     = likedSongs.length;
+    document.getElementById('statPlaylists').innerText = playlists.length;
+    document.getElementById('statRecent').innerText    = recentlyPlayed.length;
+    document.getElementById('statTotalPlays').innerText = totalPlays;
+
+    // sort songs by play count
+    const ranked = songs
+        .map(s => ({ song: s, count: counts[s.songPath] || 0 }))
+        .filter(x => x.count > 0)
+        .sort((a, b) => b.count - a.count);
+
+    // top song
+    const topSongEl = document.getElementById('statsTopSong');
+    if (ranked.length === 0) {
+        topSongEl.innerHTML = '<div class="stats-top-song-empty">Play some songs to see your top track!</div>';
+    } else {
+        const top = ranked[0];
+        topSongEl.innerHTML = `
+            <img src="${top.song.songImage}" alt="">
+            <div class="stats-top-song-info">
+                <span class="stats-top-song-name">${top.song.songName}</span>
+                <span class="stats-top-song-des">${top.song.songDes}</span>
+                <span class="stats-top-song-plays">🔄 Played ${top.count} time${top.count !== 1 ? 's' : ''}</span>
+            </div>
+            <div class="stats-top-badge">#1</div>`;
+    }
+
+    // top 3 chart
+    const chartEl = document.getElementById('statsChart');
+    if (ranked.length === 0) {
+        chartEl.innerHTML = '<div class="stats-top-song-empty">No plays yet</div>';
+    } else {
+        const maxCount = ranked[0].count;
+        chartEl.innerHTML = ranked.slice(0, 3).map((x, i) => `
+            <div class="stats-bar-row">
+                <span class="stats-bar-rank">${i + 1}</span>
+                <img src="${x.song.songImage}" alt="">
+                <div class="stats-bar-info">
+                    <span class="stats-bar-name">${x.song.songName}</span>
+                    <div class="stats-bar-track">
+                        <div class="stats-bar-fill" style="width:${(x.count / maxCount) * 100}%"></div>
+                    </div>
+                </div>
+                <span class="stats-bar-count">${x.count}x</span>
+            </div>`).join('');
+    }
+
+    // vibe
+    const vibe = getVibeFromTopSong(ranked[0]?.song);
+    document.getElementById('statsVibeEmoji').innerText = vibe.emoji;
+    document.getElementById('statsVibeText').innerText  = vibe.text;
+
+    statsOverlay.classList.remove('hidden');
+    statsOverlay.classList.add('visible');
+}
+
+statsBtn.addEventListener('click', openStats);
+statsClose.addEventListener('click', () => {
+    statsOverlay.classList.add('hidden');
+    statsOverlay.classList.remove('visible');
+});
+statsOverlay.addEventListener('click', e => { if (e.target === statsOverlay) { statsOverlay.classList.add('hidden'); statsOverlay.classList.remove('visible'); } });

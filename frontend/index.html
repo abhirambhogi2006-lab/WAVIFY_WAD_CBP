@@ -42,7 +42,7 @@
             <div class="right-half-p1">
                 <p class="nav-text" id="premiumBtn">✦ Premium</p>
                 <p class="nav-text" id="assistantBtn">🎵 Assistant</p>
-                <p class="nav-text">Download</p>
+                <p class="nav-text" id="statsBtn">📊 My Stats</p>
             </div>
             <div class="right-half-p2">
                 <div class="nav-text" id="navSignup">Sign up</div>
@@ -221,6 +221,18 @@
                 <div><i id="play" class="player-btns fa-solid fa-circle-play"></i></div>
                 <div><i id="forward" class="player-btns fa-solid fa-forward-step"></i></div>
                 <div><i id="repeat" class="player-btns fa-solid fa-repeat"></i></div>
+                <div class="speed-wrap">
+                    <button class="speed-btn" id="speedBtn">1x</button>
+                    <div class="speed-dropdown" id="speedDropdown">
+                        <div class="speed-option" data-speed="0.5">0.5x</div>
+                        <div class="speed-option" data-speed="0.75">0.75x</div>
+                        <div class="speed-option selected" data-speed="1">1x</div>
+                        <div class="speed-option" data-speed="1.25">1.25x</div>
+                        <div class="speed-option" data-speed="1.5">1.5x</div>
+                        <div class="speed-option" data-speed="1.75">1.75x</div>
+                        <div class="speed-option" data-speed="2">2x</div>
+                    </div>
+                </div>
             </div>
 
             <div>
@@ -447,11 +459,23 @@
                     <i class="fa-solid fa-repeat np-btn" id="npRepeat"></i>
                 </div>
 
-                <!-- Volume -->
+                <!-- Volume + Speed -->
                 <div class="np-volume-wrap">
                     <i class="fa-solid fa-volume-low np-vol-icon"></i>
                     <input type="range" class="np-volume" id="npVolume" value="100" min="0" max="100">
                     <i class="fa-solid fa-volume-high np-vol-icon"></i>
+                    <div class="speed-wrap np-speed-wrap">
+                        <button class="speed-btn np-speed-btn" id="npSpeedBtn">1x</button>
+                        <div class="speed-dropdown speed-dropdown-up" id="npSpeedDropdown">
+                            <div class="speed-option" data-speed="0.5">0.5x</div>
+                            <div class="speed-option" data-speed="0.75">0.75x</div>
+                            <div class="speed-option selected" data-speed="1">1x</div>
+                            <div class="speed-option" data-speed="1.25">1.25x</div>
+                            <div class="speed-option" data-speed="1.5">1.5x</div>
+                            <div class="speed-option" data-speed="1.75">1.75x</div>
+                            <div class="speed-option" data-speed="2">2x</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -512,6 +536,67 @@
                 <button class="assistant-send" id="assistantSend">
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Stats Modal -->
+    <div class="stats-overlay hidden" id="statsOverlay">
+        <div class="stats-panel">
+            <div class="stats-header">
+                <div class="stats-header-left">
+                    <div class="stats-icon">📊</div>
+                    <div>
+                        <div class="stats-title">My Stats</div>
+                        <div class="stats-subtitle">Your Wavify journey</div>
+                    </div>
+                </div>
+                <i class="fa-solid fa-xmark stats-close" id="statsClose"></i>
+            </div>
+
+            <div class="stats-body">
+                <!-- Top cards row -->
+                <div class="stats-cards">
+                    <div class="stats-card">
+                        <div class="stats-card-icon">❤️</div>
+                        <div class="stats-card-val" id="statLiked">0</div>
+                        <div class="stats-card-label">Liked Songs</div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-card-icon">🎵</div>
+                        <div class="stats-card-val" id="statPlaylists">0</div>
+                        <div class="stats-card-label">Playlists</div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-card-icon">🕒</div>
+                        <div class="stats-card-val" id="statRecent">0</div>
+                        <div class="stats-card-label">Recently Played</div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-card-icon">▶️</div>
+                        <div class="stats-card-val" id="statTotalPlays">0</div>
+                        <div class="stats-card-label">Total Plays</div>
+                    </div>
+                </div>
+
+                <!-- Top song -->
+                <div class="stats-section-label">🏆 Your #1 Most Played</div>
+                <div class="stats-top-song" id="statsTopSong">
+                    <div class="stats-top-song-empty">Play some songs to see your top track!</div>
+                </div>
+
+                <!-- Top 3 chart -->
+                <div class="stats-section-label">🎧 Top 3 Tracks</div>
+                <div class="stats-chart" id="statsChart">
+                    <div class="stats-top-song-empty">No plays yet</div>
+                </div>
+
+                <!-- Listening personality -->
+                <div class="stats-section-label">🎭 Your Listening Vibe</div>
+                <div class="stats-vibe" id="statsVibe">
+                    <div class="stats-vibe-emoji" id="statsVibeEmoji">🎵</div>
+                    <div class="stats-vibe-text" id="statsVibeText">Start listening to discover your vibe!</div>
+                </div>
             </div>
         </div>
     </div>
