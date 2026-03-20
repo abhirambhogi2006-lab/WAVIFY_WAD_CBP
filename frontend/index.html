@@ -84,6 +84,17 @@
                         <p>No playlists yet</p>
                         <span>Hit <b>+</b> to create one</span>
                     </div>
+                    <!-- Liked Songs pinned card -->
+                    <div class="lib-card liked-songs-card" id="likedSongsCard">
+                        <div class="lib-card-cover">
+                            <div class="liked-songs-cover"><i class="fa-solid fa-heart"></i></div>
+                            <div class="lib-card-play"><i class="fa-solid fa-circle-play"></i></div>
+                        </div>
+                        <div class="lib-card-info">
+                            <span class="lib-card-name">Liked Songs</span>
+                            <span class="lib-card-count" id="likedSongsCount">0 songs</span>
+                        </div>
+                    </div>
                     <div class="lib-grid" id="libGrid"></div>
                 </div>
             </div>
@@ -173,48 +184,19 @@
                         <div class="img-title">drivers license</div>
                         <div class="img-description">Olivia Rodrigo</div>
                     </div>
+                    <div class="music-card">
+                        <img src="Images/19.jpg">
+                        <div class="music-play-btn"><i id="19" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Love Nwantiti</div>
+                        <div class="img-description">CKay ft. Joeboy & Kuami Eugene</div>
+                    </div>
                 </div>
             </div>
 
             <div class="music-section">
                 <h2>🕒 Recently Played</h2>
-                <div class="songs">
-                    <div class="music-card">
-                        <img src="Images/13.jpg">
-                        <div class="music-play-btn"><i id="13" class="playMusic fa-solid fa-circle-play"></i></div>
-                        <div class="img-title">Mood</div>
-                        <div class="img-description">24kGoldn ft. iann dior</div>
-                    </div>
-                    <div class="music-card">
-                        <img src="Images/14.jpg">
-                        <div class="music-play-btn"><i id="14" class="playMusic fa-solid fa-circle-play"></i></div>
-                        <div class="img-title">Positions</div>
-                        <div class="img-description">Ariana Grande</div>
-                    </div>
-                    <div class="music-card">
-                        <img src="Images/15.jpg">
-                        <div class="music-play-btn"><i id="15" class="playMusic fa-solid fa-circle-play"></i></div>
-                        <div class="img-title">Therefore I Am</div>
-                        <div class="img-description">Billie Eilish</div>
-                    </div>
-                    <div class="music-card">
-                        <img src="Images/16.jpg">
-                        <div class="music-play-btn"><i id="16" class="playMusic fa-solid fa-circle-play"></i></div>
-                        <div class="img-title">Happier Than Ever</div>
-                        <div class="img-description">Billie Eilish</div>
-                    </div>
-                    <div class="music-card">
-                        <img src="Images/17.jpg">
-                        <div class="music-play-btn"><i id="17" class="playMusic fa-solid fa-circle-play"></i></div>
-                        <div class="img-title">Heat Waves</div>
-                        <div class="img-description">Glass Animals</div>
-                    </div>
-                    <div class="music-card">
-                        <img src="Images/18.jpg">
-                        <div class="music-play-btn"><i id="18" class="playMusic fa-solid fa-circle-play"></i></div>
-                        <div class="img-title">As It Was</div>
-                        <div class="img-description">Harry Styles</div>
-                    </div>
+                <div class="songs" id="recentlyPlayedGrid">
+                    <p class="recent-empty">Play a song to see it here</p>
                 </div>
             </div>
         </div>
@@ -305,11 +287,28 @@
                 <div>
                     <h2 id="playlistViewName"></h2>
                     <p id="playlistViewCount"></p>
-                    <button id="playlistViewDelete" class="pl-delete-playlist-btn"><i class="fa-solid fa-trash"></i> Delete Playlist</button>
+                    <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+                        <button id="playlistViewEdit" class="pl-edit-playlist-btn"><i class="fa-solid fa-pen"></i> Edit Playlist</button>
+                        <button id="playlistViewDelete" class="pl-delete-playlist-btn"><i class="fa-solid fa-trash"></i> Delete Playlist</button>
+                    </div>
                 </div>
             </div>
         </div>
         <div id="playlistViewSongs" class="playlist-view-songs"></div>
+    </div>
+
+    <!-- Edit Playlist Modal -->
+    <div id="editPlaylistModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Edit Playlist</h3>
+                <i class="fa-solid fa-xmark modal-close" id="closeEditModal"></i>
+            </div>
+            <input type="text" id="editPlaylistName" class="playlist-input" placeholder="Playlist name">
+            <p class="modal-label">Songs</p>
+            <div class="song-list" id="editSongList"></div>
+            <button class="modal-create-btn" id="confirmEdit">Save Changes</button>
+        </div>
     </div>
 
     <!-- Create Playlist Modal -->
@@ -426,8 +425,11 @@
 
             <!-- Song Info + Controls -->
             <div class="np-info-wrap">
-                <div class="np-song-name" id="npSongName">Song Name</div>
-                <div class="np-song-des"  id="npSongDes">Artist</div>
+                <div class="np-song-name-row">
+                    <div class="np-song-name" id="npSongName">Song Name</div>
+                    <i class="fa-regular fa-heart np-like-btn" id="npLikeBtn"></i>
+                </div>
+                <div class="np-song-des" id="npSongDes">Artist</div>
 
                 <!-- Progress -->
                 <div class="np-progress-wrap">

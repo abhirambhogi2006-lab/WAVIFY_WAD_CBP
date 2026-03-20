@@ -62,6 +62,7 @@ playMusic.forEach((element) => {
         audio.currentTime = 0;
         audio.play();
         updateNowBar();
+        addToRecent(songs[index - 1]);
         openNowPlaying();
     })
 });
@@ -86,10 +87,65 @@ songs = [
     { songName: 'Therefore I Am', songDes: 'Billie Eilish', songImage: 'Images/15.jpg', songPath: 'Audio/15.mp3' },
     { songName: 'Happier Than Ever', songDes: 'Billie Eilish', songImage: 'Images/16.jpg', songPath: 'Audio/16.mp3' },
     { songName: 'Heat Waves', songDes: 'Glass Animals', songImage: 'Images/17.jpg', songPath: 'Audio/17.mp3' },
-    { songName: 'As It Was', songDes: 'Harry Styles', songImage: 'Images/18.jpg', songPath: 'Audio/18.mp3' }
+    { songName: 'As It Was', songDes: 'Harry Styles', songImage: 'Images/18.jpg', songPath: 'Audio/18.mp3' },
+    { songName: 'Love Nwantiti', songDes: 'CKay ft. Joeboy & Kuami Eugene', songImage: 'Images/19.jpg', songPath: 'Audio/19.mp3' }
 ]
 
 order = [...songs];
+
+// ── Recently Played ──────────────────────────────────
+let recentlyPlayed = [];
+
+function addToRecent(song) {
+    recentlyPlayed = recentlyPlayed.filter(s => s.songPath !== song.songPath);
+    recentlyPlayed.unshift(song);
+    if (recentlyPlayed.length > 6) recentlyPlayed.pop();
+    renderRecent();
+    if (currentUser) saveRecentSongs();
+}
+
+async function saveRecentSongs() {
+    await fetch(`${API}/recent/${currentUser}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recentSongs: recentlyPlayed })
+    });
+}
+
+async function loadRecentSongs() {
+    const res = await fetch(`${API}/recent/${currentUser}`);
+    const data = await res.json();
+    recentlyPlayed = data.recentSongs || [];
+    renderRecent();
+}
+
+function renderRecent() {
+    const grid = document.getElementById('recentlyPlayedGrid');
+    grid.innerHTML = '';
+    if (recentlyPlayed.length === 0) {
+        grid.innerHTML = '<p class="recent-empty">Play a song to see it here</p>';
+        return;
+    }
+    recentlyPlayed.forEach(song => {
+        const card = document.createElement('div');
+        card.className = 'music-card';
+        card.innerHTML = `
+            <img src="${song.songImage}" alt="">
+            <div class="music-play-btn"><i class="fa-solid fa-circle-play recent-play-icon"></i></div>
+            <div class="img-title">${song.songName}</div>
+            <div class="img-description">${song.songDes}</div>`;
+        card.querySelector('.recent-play-icon').addEventListener('click', () => {
+            const idx = songs.indexOf(song);
+            currentSong = idx + 1;
+            audio.src = song.songPath;
+            audio.currentTime = 0;
+            audio.play();
+            updateNowBar();
+            openNowPlaying();
+        });
+        grid.appendChild(card);
+    });
+}
 
 allMusic.forEach((element, i) => {
     element.getElementsByTagName('img')[0].src = songs[i].songImage;
@@ -144,17 +200,19 @@ repeat.addEventListener('click', () => {
 playNextSong = () => {
     if(!songOnRepeat){
         let nextSong = (currentSong + 1) % playMusic.length;
-        currentSong = nextSong == 0 ? 18 : nextSong;
+        currentSong = nextSong == 0 ? 19 : nextSong;
     
         audio.src = order[currentSong-1].songPath;
         audio.currentTime = 0;
         audio.play();
         updateNowBar();
+        addToRecent(order[currentSong-1]);
     } else {
         audio.src = order[currentSong-1].songPath;
         audio.currentTime = 0;
         audio.play();
         updateNowBar();
+        addToRecent(order[currentSong-1]);
     }
 }
 
@@ -165,6 +223,7 @@ playPrevSong = () => {
     audio.currentTime = 0;
     audio.play();
     updateNowBar();
+    addToRecent(songs[currentSong-1]);
 }
 
 function updateNowBar () {
@@ -268,6 +327,8 @@ function loginUser(username) {
     loadUserPlaylists();
     loadUserTheme(username);
     loadUserAvatar(username);
+    loadRecentSongs();
+    loadLikedSongs();
 }
 
 logoutBtn.addEventListener('click', () => {
@@ -279,6 +340,11 @@ logoutBtn.addEventListener('click', () => {
     loggedUsername.innerText = '';
     document.querySelectorAll('.playlist-entry').forEach(e => e.remove());
     libGrid.innerHTML = '';
+    recentlyPlayed = [];
+    renderRecent();
+    likedSongs = [];
+    syncAllHearts();
+    updateLikedSongsCard();
     applyTheme('default');
     applyAvatar('');
     showLibraryGuest();
@@ -320,6 +386,80 @@ const playlistViewCount= document.getElementById('playlistViewCount');
 const playlistViewCover= document.getElementById('playlistViewCover');
 const playlistViewSongs= document.getElementById('playlistViewSongs');
 const backToMain       = document.getElementById('backToMain');
+
+// ── Edit Playlist ──
+const editPlaylistModal  = document.getElementById('editPlaylistModal');
+const closeEditModal     = document.getElementById('closeEditModal');
+const confirmEdit        = document.getElementById('confirmEdit');
+const editSongListEl     = document.getElementById('editSongList');
+const editPlaylistNameEl = document.getElementById('editPlaylistName');
+
+let editTargetCard  = null;
+let editTargetEntry = null;
+
+function openEditPlaylist(name, plSongs, card, entry) {
+    editTargetCard  = card;
+    editTargetEntry = entry;
+    editPlaylistNameEl.value = name;
+    editSongListEl.innerHTML = '';
+    songs.forEach((song, i) => {
+        const isChecked = plSongs.some(s => s.songPath === song.songPath);
+        const item = document.createElement('label');
+        item.className = 'song-item';
+        item.innerHTML = `
+            <input type="checkbox" value="${i}" ${isChecked ? 'checked' : ''}>
+            <img src="${song.songImage}" alt="">
+            <div class="song-item-info">
+                <span class="song-item-name">${song.songName}</span>
+                <span class="song-item-des">${song.songDes}</span>
+            </div>`;
+        editSongListEl.appendChild(item);
+    });
+    editPlaylistModal.classList.add('active');
+}
+
+closeEditModal.addEventListener('click', () => editPlaylistModal.classList.remove('active'));
+editPlaylistModal.addEventListener('click', (e) => { if (e.target === editPlaylistModal) editPlaylistModal.classList.remove('active'); });
+
+confirmEdit.addEventListener('click', () => {
+    const newName = editPlaylistNameEl.value.trim() || 'My Playlist';
+    const checked = Array.from(editSongListEl.querySelectorAll('input[type="checkbox"]:checked'));
+    if (checked.length === 0) { editPlaylistNameEl.placeholder = 'Select at least one song!'; return; }
+    const newSongs = checked.map(cb => songs[parseInt(cb.value)]);
+
+    // update hidden entry
+    editTargetEntry.dataset.plName  = newName;
+    editTargetEntry.dataset.plSongs = JSON.stringify(newSongs);
+
+    // update lib card
+    editTargetCard.querySelector('.lib-card-cover img').src = newSongs[0].songImage;
+    editTargetCard.querySelector('.lib-card-name').innerText = newName;
+    editTargetCard.querySelector('.lib-card-count').innerText = `${newSongs.length} song${newSongs.length > 1 ? 's' : ''}`;
+
+    // refresh playlist view
+    playlistViewName.innerText  = newName;
+    playlistViewCount.innerText = `${newSongs.length} song${newSongs.length > 1 ? 's' : ''}`;
+    playlistViewCover.src       = newSongs[0].songImage;
+    currentPlaylistSongs        = newSongs;
+    playlistViewSongs.innerHTML = '';
+    newSongs.forEach((song, i) => {
+        const row = document.createElement('div');
+        row.className = 'pl-song-row';
+        row.innerHTML = `
+            <span class="pl-song-num">${i + 1}</span>
+            <i class="fa-solid fa-circle-play pl-play-icon"></i>
+            <img src="${song.songImage}" alt="">
+            <div class="pl-song-details">
+                <span class="pl-song-title">${song.songName}</span>
+                <span class="pl-song-desc">${song.songDes}</span>
+            </div>`;
+        row.addEventListener('click', () => playPlaylistSong(i));
+        playlistViewSongs.appendChild(row);
+    });
+
+    if (currentUser) saveCurrentPlaylists();
+    editPlaylistModal.classList.remove('active');
+});
 
 const libGuest      = document.getElementById('libGuest');
 const libPlaylists  = document.getElementById('libPlaylists');
@@ -406,7 +546,7 @@ function addPlaylistEntry(name, selectedSongs) {
         if (currentUser) saveCurrentPlaylists();
         updateLibEmpty();
     });
-    card.addEventListener('click', () => openPlaylistView(name, selectedSongs, { remove: () => { card.remove(); entry.remove(); updateLibEmpty(); } }));
+    card.addEventListener('click', () => openPlaylistView(name, selectedSongs, card, entry, { remove: () => { card.remove(); entry.remove(); updateLibEmpty(); } }));
     libGrid.appendChild(card);
     updateLibEmpty();
 }
@@ -414,12 +554,16 @@ function addPlaylistEntry(name, selectedSongs) {
 let currentPlaylistSongs = [];
 let currentPlaylistIndex = -1;
 
-function openPlaylistView(name, plSongs, entryEl) {
+function openPlaylistView(name, plSongs, card, entry, entryEl) {
     currentPlaylistSongs = plSongs;
     playlistViewName.innerText = name;
     playlistViewCount.innerText = `${plSongs.length} song${plSongs.length > 1 ? 's' : ''}`;
     playlistViewCover.src = plSongs[0].songImage;
     playlistViewSongs.innerHTML = '';
+
+    // wire Edit button
+    const editBtn = document.getElementById('playlistViewEdit');
+    editBtn.onclick = () => openEditPlaylist(name, plSongs, card, entry);
 
     const existingDel = document.getElementById('playlistViewDelete');
     if (existingDel) existingDel.replaceWith(existingDel.cloneNode(true));
@@ -456,6 +600,7 @@ function playPlaylistSong(i) {
     play.classList.remove('fa-circle-play');
     play.classList.add('fa-circle-pause');
     updateNowBar_playlist(song);
+    addToRecent(song);
     highlightPlaylistRow(i);
 }
 
@@ -472,6 +617,89 @@ function updateNowBar_playlist(song) {
 }
 
 backToMain.addEventListener('click', () => playlistView.classList.add('hidden'));
+
+// ── Likes ────────────────────────────────────────────────────────────────────
+let likedSongs = [];
+
+async function loadLikedSongs() {
+    const res = await fetch(`${API}/likes/${currentUser}`);
+    const data = await res.json();
+    likedSongs = data.likedSongs || [];
+    syncAllHearts();
+    updateLikedSongsCard();
+}
+
+async function saveLikedSongs() {
+    await fetch(`${API}/likes/${currentUser}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ likedSongs })
+    });
+}
+
+function isLiked(song) {
+    return likedSongs.some(s => s.songPath === song.songPath);
+}
+
+function toggleLike(song, heartEl) {
+    if (!currentUser) { openAuthModal(true); return; }
+    if (isLiked(song)) {
+        likedSongs = likedSongs.filter(s => s.songPath !== song.songPath);
+    } else {
+        likedSongs.push(song);
+        heartEl.classList.add('heart-pop');
+        setTimeout(() => heartEl.classList.remove('heart-pop'), 400);
+    }
+    syncAllHearts();
+    updateLikedSongsCard();
+    saveLikedSongs();
+}
+
+function syncAllHearts() {
+    document.querySelectorAll('.card-like-btn').forEach(btn => {
+        const song = songs[parseInt(btn.dataset.idx)];
+        const liked = isLiked(song);
+        btn.classList.toggle('fa-solid', liked);
+        btn.classList.toggle('fa-regular', !liked);
+        btn.classList.toggle('liked', liked);
+    });
+    // sync NP heart
+    const npBtn = document.getElementById('npLikeBtn');
+    if (npBtn) {
+        const song = order[currentSong - 1];
+        const liked = song && isLiked(song);
+        npBtn.classList.toggle('fa-solid', liked);
+        npBtn.classList.toggle('fa-regular', !liked);
+        npBtn.classList.toggle('liked', liked);
+    }
+}
+
+function updateLikedSongsCard() {
+    const countEl = document.getElementById('likedSongsCount');
+    if (countEl) countEl.innerText = `${likedSongs.length} song${likedSongs.length !== 1 ? 's' : ''}`;
+}
+
+// wire card heart buttons
+document.querySelectorAll('.card-like-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const song = songs[parseInt(btn.dataset.idx)];
+        toggleLike(song, btn);
+    });
+});
+
+// wire NP heart button
+document.getElementById('npLikeBtn').addEventListener('click', () => {
+    const song = order[currentSong - 1];
+    if (song) toggleLike(song, document.getElementById('npLikeBtn'));
+});
+
+// wire Liked Songs card in sidebar
+document.getElementById('likedSongsCard').addEventListener('click', () => {
+    if (!currentUser) { openAuthModal(true); return; }
+    if (likedSongs.length === 0) return;
+    openPlaylistView('❤️ Liked Songs', likedSongs, null, null, { remove: null });
+});
 
 // ── Visualizer ───────────────────────────────────────────────────────────────
 const canvas = document.getElementById('visualizer');
@@ -584,6 +812,7 @@ searchInput.addEventListener('input', () => {
             play.classList.remove('fa-circle-play');
             play.classList.add('fa-circle-pause');
             updateNowBar_playlist(song);
+            addToRecent(song);
             searchInput.value = '';
             searchDropdown.classList.remove('active');
         });
@@ -681,7 +910,7 @@ document.querySelectorAll('.avatar-option').forEach(opt => {
 (function checkSession() {
     const saved = sessionStorage.getItem('spotify_session');
     if (saved) { loginUser(saved); loadUserTheme(saved); loadUserAvatar(saved); }
-    else { showLibraryGuest(); }
+    else { showLibraryGuest(); renderRecent(); }
 })();
 
 // ── Now Playing Page ────────────────────────────────────
@@ -757,6 +986,7 @@ function updateNpBar() {
     npArt.src = song.songImage;
     npSongName.innerText = song.songName;
     npSongDes.innerText  = song.songDes;
+    syncAllHearts();
 }
 
 // sync progress

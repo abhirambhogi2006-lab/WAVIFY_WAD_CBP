@@ -13,12 +13,9 @@ mongoose.connect('mongodb://127.0.0.1:27017/spotifyClone')
 const userSchema = new mongoose.Schema({
     username: { type: String, unique: true, required: true },
     password: { type: String, required: true },
-    playlists: [
-        {
-            name: String,
-            songs: Array
-        }
-    ]
+    playlists: [{ name: String, songs: Array }],
+    recentSongs: { type: Array, default: [] },
+    likedSongs:  { type: Array, default: [] }
 });
 
 const User = mongoose.model('User', userSchema);
@@ -56,6 +53,34 @@ app.post('/playlists/:username', async (req, res) => {
     const { playlists } = req.body;
     await User.updateOne({ username: req.params.username }, { $set: { playlists } });
     res.json({ message: 'Playlists saved.' });
+});
+
+// Get recent songs
+app.get('/recent/:username', async (req, res) => {
+    const user = await User.findOne({ username: req.params.username });
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+    res.json({ recentSongs: user.recentSongs || [] });
+});
+
+// Save recent songs
+app.post('/recent/:username', async (req, res) => {
+    const { recentSongs } = req.body;
+    await User.updateOne({ username: req.params.username }, { $set: { recentSongs } });
+    res.json({ message: 'Recent songs saved.' });
+});
+
+// Get liked songs
+app.get('/likes/:username', async (req, res) => {
+    const user = await User.findOne({ username: req.params.username });
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+    res.json({ likedSongs: user.likedSongs || [] });
+});
+
+// Save liked songs
+app.post('/likes/:username', async (req, res) => {
+    const { likedSongs } = req.body;
+    await User.updateOne({ username: req.params.username }, { $set: { likedSongs } });
+    res.json({ message: 'Liked songs saved.' });
 });
 
 app.listen(3000, () => console.log('Server running at http://localhost:3000'));
