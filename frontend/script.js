@@ -1446,16 +1446,99 @@ const ASSISTANT_KB = [
 
 function getAssistantReply(input) {
     const q = input.toLowerCase();
+
+    // ── App-aware: how many songs ──
+    if (/how many songs|total songs|song count|number of songs/.test(q)) {
+        return `🎵 Wavify currently has <strong>${songs.length} songs</strong> in the library! Here's the full list:<ul>${songs.map(s => `<li><strong>${s.songName}</strong> – ${s.songDes}</li>`).join('')}</ul>`;
+    }
+
+    // ── App-aware: list all songs ──
+    if (/all songs|every song|list.*songs|show.*songs|what songs|songs available|available songs/.test(q)) {
+        return `🎶 Here are all <strong>${songs.length} songs</strong> on Wavify:<ul>${songs.map((s,i) => `<li><strong>${s.songName}</strong> – ${s.songDes}</li>`).join('')}</ul>`;
+    }
+
+    // ── App-aware: songs by a specific artist ──
+    const artistMatch = SINGERS.find(s => s.keys.some(k => q.includes(k)));
+    if (artistMatch && /song|track|music|sing|playlist|by|from/.test(q)) {
+        const matched = songs.filter(s =>
+            artistMatch.keys.some(k => s.songDes.toLowerCase().includes(k) || s.songName.toLowerCase().includes(k))
+        );
+        if (matched.length > 0) {
+            return `🎤 Songs by <strong>${artistMatch.name}</strong> on Wavify:<ul>${matched.map(s => `<li><strong>${s.songName}</strong> – ${s.songDes}</li>`).join('')}</ul>`;
+        } else {
+            return `🎤 <strong>${artistMatch.name}</strong> is one of your favourite artists on Wavify, but we don't have their songs in the library yet. Stay tuned! 🎵`;
+        }
+    }
+
+    // ── App-aware: list all artists/singers ──
+    if (/artist|singer|who.*sing|available.*artist|which artist|all artist/.test(q)) {
+        const artistList = [...new Set(songs.map(s => s.songDes.split(' ft.')[0].split(' &')[0].trim()))];
+        return `🎤 Artists available on Wavify:<ul>${artistList.map(a => `<li><strong>${a}</strong></li>`).join('')}</ul>You can also set your favourite artists via <strong>🎤 My Artists</strong> in the navbar!`;
+    }
+
+    // ── App-aware: what is wavify / about ──
+    if (/what is wavify|about wavify|wavify app|what.*app|tell me about/.test(q)) {
+        return `🎵 <strong>Wavify</strong> is your personal music streaming app! Here's what you can do:<ul>
+            <li>🎧 Stream <strong>${songs.length} songs</strong> across multiple genres</li>
+            <li>❤️ Like songs and build your <strong>Liked Songs</strong> collection</li>
+            <li>📋 Create and manage <strong>custom playlists</strong></li>
+            <li>🎤 Set <strong>favourite artists</strong> for personalised recommendations</li>
+            <li>📊 View your <strong>listening stats</strong> and top tracks</li>
+            <li>🕒 Track your <strong>recently played</strong> history</li>
+            <li>⚡ Control <strong>playback speed</strong> from 0.5x to 2x</li>
+            <li>🎨 Choose from multiple <strong>colour themes</strong></li></ul>`;
+    }
+
+    // ── App-aware: features ──
+    if (/feature|what can|capabilities|how to|how do i|can i/.test(q)) {
+        return `✨ <strong>Wavify features:</strong><ul>
+            <li>🎵 Play any of the <strong>${songs.length} songs</strong> in the library</li>
+            <li>❤️ <strong>Like songs</strong> using the heart button on any card</li>
+            <li>📋 <strong>Create playlists</strong> using the + button in Your Library</li>
+            <li>🎤 <strong>My Artists</strong> – pick favourite singers for recommendations</li>
+            <li>📊 <strong>My Stats</strong> – see your listening history and top tracks</li>
+            <li>🔀 <strong>Shuffle & Repeat</strong> in the player bar</li>
+            <li>⚡ <strong>Playback speed</strong> control (0.5x – 2x)</li>
+            <li>🎨 <strong>Themes</strong> – change the app colour in Settings</li></ul>`;
+    }
+
+    // ── App-aware: recently played ──
+    if (/recent|recently played|last played|history/.test(q)) {
+        if (recentlyPlayed.length === 0) {
+            return `🕒 You haven't played any songs yet! Start listening and your history will show up here.`;
+        }
+        return `🕒 Your <strong>recently played</strong> songs:<ul>${recentlyPlayed.slice(0,6).map(s => `<li><strong>${s.songName}</strong> – ${s.songDes}</li>`).join('')}</ul>`;
+    }
+
+    // ── App-aware: liked songs ──
+    if (/liked|favourite songs|my likes|heart/.test(q)) {
+        if (!currentUser) return `❤️ Log in to see your liked songs!`;
+        if (likedSongs.length === 0) return `❤️ You haven't liked any songs yet! Hit the ❤️ on any song card to like it.`;
+        return `❤️ Your <strong>${likedSongs.length} liked songs</strong>:<ul>${likedSongs.map(s => `<li><strong>${s.songName}</strong> – ${s.songDes}</li>`).join('')}</ul>`;
+    }
+
+    // ── App-aware: search for a specific song ──
+    const songMatch = songs.find(s =>
+        q.includes(s.songName.toLowerCase()) ||
+        s.songName.toLowerCase().split(' ').some(w => w.length > 3 && q.includes(w))
+    );
+    if (songMatch) {
+        return `🎵 Found it! <strong>${songMatch.songName}</strong> by <strong>${songMatch.songDes}</strong> is available on Wavify. Click the play button on its card to listen! 🎧`;
+    }
+
+    // ── General KB fallback ──
     for (const entry of ASSISTANT_KB) {
         if (entry.keys.some(k => q.includes(k))) return entry.reply;
     }
-    return `🎵 Great question! I'm not sure about that specifically, but here are some <strong>universally loved songs</strong> you might enjoy:<ul>
-        <li><strong>Bohemian Rhapsody</strong> – Queen</li>
-        <li><strong>Blinding Lights</strong> – The Weeknd</li>
-        <li><strong>Shape of You</strong> – Ed Sheeran</li>
-        <li><strong>Bad Guy</strong> – Billie Eilish</li>
-        <li><strong>Levitating</strong> – Dua Lipa</li></ul>
-        Try asking me about a <strong>mood, genre, artist, or activity</strong>! 🎧`;
+
+    return `🤔 I didn't quite get that! Here's what I can help you with:<ul>
+        <li>🎵 "<em>How many songs are available?</em>"</li>
+        <li>🎤 "<em>Show me Ed Sheeran songs</em>"</li>
+        <li>📋 "<em>List all songs</em>"</li>
+        <li>❤️ "<em>Show my liked songs</em>"</li>
+        <li>🕒 "<em>What did I recently play?</em>"</li>
+        <li>🎧 "<em>Suggest chill songs</em>"</li>
+        <li>✨ "<em>What features does Wavify have?</em>"</li></ul>`;
 }
 
 function addMessage(text, isUser) {
