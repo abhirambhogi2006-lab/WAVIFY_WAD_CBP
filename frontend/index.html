@@ -43,6 +43,7 @@
                 <p class="nav-text" id="premiumBtn">✦ Premium</p>
                 <p class="nav-text" id="assistantBtn">🎵 Assistant</p>
                 <p class="nav-text" id="statsBtn">📊 My Stats</p>
+                <p class="nav-text" id="artistsBtn">🎤 My Artists</p>
             </div>
             <div class="right-half-p2">
                 <div class="nav-text" id="navSignup">Sign up</div>
@@ -104,7 +105,7 @@
 
         <div class="main-right-part">
             <div class="music-section">
-                <h2>🔥 Popular Right Now</h2>
+                <h2><i class="fa-solid fa-fire section-icon"></i> Popular Right Now</h2>
                 <div class="songs">
                     <div class="music-card">
                         <img src="Images/1.jpg">
@@ -142,59 +143,46 @@
                         <div class="img-title">Good 4 U</div>
                         <div class="img-description">Olivia Rodrigo</div>
                     </div>
-                </div>
-            </div>
-
-            <div class="music-section">
-                <h2>⭐ Recommended For You</h2>
-                <div class="songs">
                     <div class="music-card">
-                        <img src="Images/7.jpg">
-                        <div class="music-play-btn"><i id="7" class="playMusic fa-solid fa-circle-play"></i></div>
-                        <div class="img-title">Montero</div>
-                        <div class="img-description">Lil Nas X</div>
+                        <img src="Images/20.jpg">
+                        <div class="music-play-btn"><i id="20" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Espresso</div>
+                        <div class="img-description">Sabrina Carpenter</div>
                     </div>
                     <div class="music-card">
-                        <img src="Images/8.jpg">
-                        <div class="music-play-btn"><i id="8" class="playMusic fa-solid fa-circle-play"></i></div>
-                        <div class="img-title">Save Your Tears</div>
-                        <div class="img-description">The Weeknd & Ariana Grande</div>
+                        <img src="Images/21.jpg">
+                        <div class="music-play-btn"><i id="21" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Apna Bana Le</div>
+                        <div class="img-description">Arijit Singh</div>
                     </div>
                     <div class="music-card">
-                        <img src="Images/9.jpg">
-                        <div class="music-play-btn"><i id="9" class="playMusic fa-solid fa-circle-play"></i></div>
-                        <div class="img-title">Butter</div>
-                        <div class="img-description">BTS</div>
+                        <img src="Images/22.jpg">
+                        <div class="music-play-btn"><i id="22" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">You Are In Love</div>
+                        <div class="img-description">Taylor Swift</div>
                     </div>
                     <div class="music-card">
-                        <img src="Images/10.jpg">
-                        <div class="music-play-btn"><i id="10" class="playMusic fa-solid fa-circle-play"></i></div>
-                        <div class="img-title">Dynamite</div>
-                        <div class="img-description">BTS</div>
+                        <img src="Images/23.jpg">
+                        <div class="music-play-btn"><i id="23" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Manwa Laage</div>
+                        <div class="img-description">Shreya Ghoshal ft. Arijit Singh</div>
                     </div>
                     <div class="music-card">
-                        <img src="Images/11.jpg">
-                        <div class="music-play-btn"><i id="11" class="playMusic fa-solid fa-circle-play"></i></div>
-                        <div class="img-title">Watermelon Sugar</div>
-                        <div class="img-description">Harry Styles</div>
-                    </div>
-                    <div class="music-card">
-                        <img src="Images/12.jpg">
-                        <div class="music-play-btn"><i id="12" class="playMusic fa-solid fa-circle-play"></i></div>
-                        <div class="img-title">drivers license</div>
-                        <div class="img-description">Olivia Rodrigo</div>
-                    </div>
-                    <div class="music-card">
-                        <img src="Images/19.jpg">
-                        <div class="music-play-btn"><i id="19" class="playMusic fa-solid fa-circle-play"></i></div>
-                        <div class="img-title">Love Nwantiti</div>
-                        <div class="img-description">CKay ft. Joeboy & Kuami Eugene</div>
+                        <img src="Images/24.jpg">
+                        <div class="music-play-btn"><i id="24" class="playMusic fa-solid fa-circle-play"></i></div>
+                        <div class="img-title">Hukum</div>
+                        <div class="img-description">Anirudh Ravichander</div>
                     </div>
                 </div>
             </div>
 
             <div class="music-section">
-                <h2>🕒 Recently Played</h2>
+                <h2><i class="fa-solid fa-star section-icon"></i> Recommended For You</h2>
+                <div class="songs" id="recommendedGrid"></div>
+            </div>
+
+            <div class="music-section">
+                <h2><i class="fa-solid fa-clock-rotate-left section-icon"></i> Recently Played</h2>
                 <div class="songs" id="recentlyPlayedGrid">
                     <p class="recent-empty">Play a song to see it here</p>
                 </div>
@@ -241,6 +229,19 @@
         </div>
         <div></div>
     </div>
+    <!-- Singer Preferences Overlay -->
+    <div id="singerPrefOverlay" class="singer-pref-overlay hidden">
+        <div class="singer-pref-box">
+            <button class="singer-pref-close" id="singerPrefClose">×</button>
+            <div class="singer-pref-header">
+                <h2><i class="fa-solid fa-microphone-lines section-icon"></i> My Artists</h2>
+                <p>Select your favourite artists to personalise your recommendations</p>
+            </div>
+            <div class="singer-pref-grid" id="singerPrefGrid"></div>
+            <button class="singer-pref-done" id="singerPrefDone">Let's Go 🎵</button>
+        </div>
+    </div>
+
     <!-- Auth Modal -->
     <div id="authModal" class="modal-overlay">
         <div class="auth-modal-box">
@@ -545,7 +546,7 @@
         <div class="stats-panel">
             <div class="stats-header">
                 <div class="stats-header-left">
-                    <div class="stats-icon">📊</div>
+                    <div class="stats-icon"><i class="fa-solid fa-chart-simple"></i></div>
                     <div>
                         <div class="stats-title">My Stats</div>
                         <div class="stats-subtitle">Your Wavify journey</div>
@@ -558,41 +559,41 @@
                 <!-- Top cards row -->
                 <div class="stats-cards">
                     <div class="stats-card">
-                        <div class="stats-card-icon">❤️</div>
+                        <div class="stats-card-icon"><i class="fa-solid fa-heart"></i></div>
                         <div class="stats-card-val" id="statLiked">0</div>
                         <div class="stats-card-label">Liked Songs</div>
                     </div>
                     <div class="stats-card">
-                        <div class="stats-card-icon">🎵</div>
+                        <div class="stats-card-icon"><i class="fa-solid fa-music"></i></div>
                         <div class="stats-card-val" id="statPlaylists">0</div>
                         <div class="stats-card-label">Playlists</div>
                     </div>
                     <div class="stats-card">
-                        <div class="stats-card-icon">🕒</div>
+                        <div class="stats-card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
                         <div class="stats-card-val" id="statRecent">0</div>
                         <div class="stats-card-label">Recently Played</div>
                     </div>
                     <div class="stats-card">
-                        <div class="stats-card-icon">▶️</div>
+                        <div class="stats-card-icon"><i class="fa-solid fa-circle-play"></i></div>
                         <div class="stats-card-val" id="statTotalPlays">0</div>
                         <div class="stats-card-label">Total Plays</div>
                     </div>
                 </div>
 
                 <!-- Top song -->
-                <div class="stats-section-label">🏆 Your #1 Most Played</div>
+                <div class="stats-section-label"><i class="fa-solid fa-trophy"></i> Your #1 Most Played</div>
                 <div class="stats-top-song" id="statsTopSong">
                     <div class="stats-top-song-empty">Play some songs to see your top track!</div>
                 </div>
 
                 <!-- Top 3 chart -->
-                <div class="stats-section-label">🎧 Top 3 Tracks</div>
+                <div class="stats-section-label"><i class="fa-solid fa-headphones"></i> Top 3 Tracks</div>
                 <div class="stats-chart" id="statsChart">
                     <div class="stats-top-song-empty">No plays yet</div>
                 </div>
 
                 <!-- Listening personality -->
-                <div class="stats-section-label">🎭 Your Listening Vibe</div>
+                <div class="stats-section-label"><i class="fa-solid fa-masks-theater"></i> Your Listening Vibe</div>
                 <div class="stats-vibe" id="statsVibe">
                     <div class="stats-vibe-emoji" id="statsVibeEmoji">🎵</div>
                     <div class="stats-vibe-text" id="statsVibeText">Start listening to discover your vibe!</div>

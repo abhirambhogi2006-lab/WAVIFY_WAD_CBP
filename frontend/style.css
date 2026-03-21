@@ -361,6 +361,28 @@ nav {
     margin: 2rem 0 2rem 2rem;
 }
 
+.music-section h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.section-icon {
+    font-size: 1rem;
+    color: var(--accent);
+    filter: drop-shadow(0 0 6px var(--accent));
+}
+
+/* Per-section icon colors */
+.fa-fire.section-icon       { color: #ff6b35; filter: drop-shadow(0 0 6px #ff6b35); }
+.fa-star.section-icon       { color: var(--accent); filter: drop-shadow(0 0 6px var(--accent)); }
+.fa-clock-rotate-left.section-icon { color: #a78bfa; filter: drop-shadow(0 0 6px #a78bfa); }
+.fa-microphone-lines.section-icon  { color: #f472b6; filter: drop-shadow(0 0 6px #f472b6); }
+
+
 .songs {
     margin: 2rem 0;
     display: flex;
@@ -1965,7 +1987,7 @@ body[data-theme="midnight"] {
     top: -80px; right: -60px;
 }
 .stats-header-left { display: flex; align-items: center; gap: 0.9rem; z-index: 1; }
-.stats-icon { font-size: 2rem; }
+.stats-icon { font-size: 1.8rem; color: var(--accent); filter: drop-shadow(0 0 8px var(--accent)); }
 .stats-title { font-size: 1.1rem; font-weight: 800; color: white; letter-spacing: 0.5px; }
 .stats-subtitle { font-size: 0.75rem; color: rgba(255,255,255,0.75); }
 .stats-close { color: rgba(255,255,255,0.8); font-size: 1.1rem; cursor: pointer; z-index: 1; transition: 0.2s; }
@@ -1999,7 +2021,11 @@ body[data-theme="midnight"] {
     transition: 0.2s;
 }
 .stats-card:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
-.stats-card-icon { font-size: 1.4rem; }
+.stats-card-icon { font-size: 1.3rem; width: 2.4rem; height: 2.4rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.stats-card:nth-child(1) .stats-card-icon { background: rgba(224,85,85,0.15); color: #e05555; filter: drop-shadow(0 0 5px #e05555); }
+.stats-card:nth-child(2) .stats-card-icon { background: rgba(29,185,84,0.15); color: var(--accent); filter: drop-shadow(0 0 5px var(--accent)); }
+.stats-card:nth-child(3) .stats-card-icon { background: rgba(167,139,250,0.15); color: #a78bfa; filter: drop-shadow(0 0 5px #a78bfa); }
+.stats-card:nth-child(4) .stats-card-icon { background: rgba(251,191,36,0.15); color: #fbbf24; filter: drop-shadow(0 0 5px #fbbf24); }
 .stats-card-val { font-size: 1.6rem; font-weight: 800; color: white; }
 .stats-card-label { font-size: 0.68rem; color: rgba(255,255,255,0.5); text-align: center; font-weight: 600; }
 
@@ -2009,7 +2035,14 @@ body[data-theme="midnight"] {
     color: rgba(255,255,255,0.5);
     text-transform: uppercase;
     letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
 }
+.stats-section-label i { color: var(--accent); filter: drop-shadow(0 0 4px var(--accent)); font-size: 0.85rem; }
+.stats-section-label .fa-trophy { color: #fbbf24; filter: drop-shadow(0 0 4px #fbbf24); }
+.stats-section-label .fa-headphones { color: #a78bfa; filter: drop-shadow(0 0 4px #a78bfa); }
+.stats-section-label .fa-masks-theater { color: #f472b6; filter: drop-shadow(0 0 4px #f472b6); }
 
 /* Top song */
 .stats-top-song {
@@ -2247,3 +2280,126 @@ body[data-theme="midnight"] {
     color: white;
     box-shadow: 0 2px 10px rgba(224,85,85,0.4);
 }
+
+/* ── Singer Preferences Overlay ─────────────────────── */
+.singer-pref-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.singer-pref-overlay.hidden { display: none; }
+
+.singer-pref-box {
+    background: #181818;
+    border-radius: 20px;
+    padding: 2.5rem 2rem 2rem;
+    max-width: 700px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+
+.singer-pref-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.singer-pref-header h2 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.4rem;
+}
+.singer-pref-header p {
+    color: #aaa;
+    font-size: 0.95rem;
+}
+
+.singer-pref-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.singer-card {
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s, transform 0.2s;
+    background: #222;
+    text-align: center;
+    position: relative;
+}
+.singer-card:hover { transform: scale(1.04); }
+.singer-card.selected {
+    border-color: var(--accent, #1db954);
+    box-shadow: 0 0 16px rgba(29,185,84,0.35);
+}
+.singer-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    background: var(--accent, #1db954);
+    color: #000;
+    font-weight: 700;
+    font-size: 0.75rem;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.singer-card img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+}
+.singer-card span {
+    display: block;
+    padding: 0.5rem 0.4rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #ddd;
+}
+
+.singer-pref-done {
+    display: block;
+    width: 100%;
+    padding: 0.85rem;
+    background: var(--accent, #1db954);
+    color: #000;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.singer-pref-done:hover { opacity: 0.85; }
+
+.singer-pref-close {
+    position: absolute;
+    top: 1rem;
+    right: 1.2rem;
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 1.6rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+}
+.singer-pref-close:hover { color: #fff; }
+.singer-pref-box { position: relative; }

@@ -42,30 +42,30 @@ progressBar.addEventListener('input', function () {
 let playMusic = Array.from(document.getElementsByClassName('playMusic'));
 
 makeAllPlay = () => {
-    playMusic.forEach((element) => {
+    document.querySelectorAll('.playMusic').forEach((element) => {
         element.classList.remove('fa-circle-pause');
         element.classList.add('fa-circle-play');
-    })
+    });
 }
 
-playMusic.forEach((element) => {
-    element.addEventListener('click', (e) => {
-        makeAllPlay();
-        e.target.classList.remove('fa-circle-play');
-        e.target.classList.add('fa-circle-pause');
-        play.classList.remove('fa-circle-play');
-        play.classList.add('fa-circle-pause');
+document.querySelector('.main-right-part').addEventListener('click', (e) => {
+    const btn = e.target.closest('.playMusic');
+    if (!btn) return;
+    makeAllPlay();
+    btn.classList.remove('fa-circle-play');
+    btn.classList.add('fa-circle-pause');
+    play.classList.remove('fa-circle-play');
+    play.classList.add('fa-circle-pause');
 
-        index = parseInt(e.target.id);
-        currentSong = index;
-        audio.src = `Audio/${index}.mp3`;
-        audio.currentTime = 0;
-        audio.play();
-        updateNowBar();
-        addToRecent(songs[index - 1]);
-        incrementPlayCount(songs[index - 1]);
-        openNowPlaying();
-    })
+    index = parseInt(btn.id);
+    currentSong = index;
+    audio.src = `Audio/${index}.mp3`;
+    audio.currentTime = 0;
+    audio.play();
+    updateNowBar();
+    addToRecent(songs[index - 1]);
+    incrementPlayCount(songs[index - 1]);
+    openNowPlaying();
 });
 
 let allMusic = Array.from(document.getElementsByClassName('music-card'));
@@ -89,7 +89,12 @@ songs = [
     { songName: 'Happier Than Ever', songDes: 'Billie Eilish', songImage: 'Images/16.jpg', songPath: 'Audio/16.mp3' },
     { songName: 'Heat Waves', songDes: 'Glass Animals', songImage: 'Images/17.jpg', songPath: 'Audio/17.mp3' },
     { songName: 'As It Was', songDes: 'Harry Styles', songImage: 'Images/18.jpg', songPath: 'Audio/18.mp3' },
-    { songName: 'Love Nwantiti', songDes: 'CKay ft. Joeboy & Kuami Eugene', songImage: 'Images/19.jpg', songPath: 'Audio/19.mp3' }
+    { songName: 'Love Nwantiti', songDes: 'CKay ft. Joeboy & Kuami Eugene', songImage: 'Images/19.jpg', songPath: 'Audio/19.mp3' },
+    { songName: 'Espresso', songDes: 'Sabrina Carpenter', songImage: 'Images/20.jpg', songPath: 'Audio/20.mp3' },
+    { songName: 'Apna Bana Le', songDes: 'Arijit Singh', songImage: 'Images/21.jpg', songPath: 'Audio/21.mp3' },
+    { songName: 'You Are In Love', songDes: 'Taylor Swift', songImage: 'Images/22.jpg', songPath: 'Audio/22.mp3' },
+    { songName: 'Manwa Laage', songDes: 'Shreya Ghoshal ft. Arijit Singh', songImage: 'Images/23.jpg', songPath: 'Audio/23.mp3' },
+    { songName: 'Hukum', songDes: 'Anirudh Ravichander', songImage: 'Images/24.jpg', songPath: 'Audio/24.mp3' }
 ]
 
 order = [...songs];
@@ -200,8 +205,8 @@ repeat.addEventListener('click', () => {
 
 playNextSong = () => {
     if(!songOnRepeat){
-        let nextSong = (currentSong + 1) % playMusic.length;
-        currentSong = nextSong == 0 ? 19 : nextSong;
+        let nextSong = (currentSong + 1) % songs.length;
+        currentSong = nextSong == 0 ? 24 : nextSong;
     
         audio.src = order[currentSong-1].songPath;
         audio.currentTime = 0;
@@ -333,6 +338,8 @@ function loginUser(username) {
     loadUserAvatar(username);
     loadRecentSongs();
     loadLikedSongs();
+    const saved = getSingerPrefs(username);
+    renderRecommended(saved);
 }
 
 logoutBtn.addEventListener('click', () => {
@@ -684,7 +691,113 @@ function updateLikedSongsCard() {
     if (countEl) countEl.innerText = `${likedSongs.length} song${likedSongs.length !== 1 ? 's' : ''}`;
 }
 
-// wire card heart buttons
+// ── Singer Preferences ───────────────────────────────
+const SINGERS = [
+    { name: 'Ed Sheeran',        img: 'Images/singers/ed_sheeran.jpg',        keys: ['ed sheeran'] },
+    { name: 'Justin Bieber',     img: 'Images/singers/justin_bieber.jpg',     keys: ['justin bieber'] },
+    { name: 'Shreya Ghoshal',    img: 'Images/singers/shreya_ghoshal.jpg',    keys: ['shreya ghoshal', 'shreya'] },
+    { name: 'Anirudh',           img: 'Images/singers/anirudh.jpg',           keys: ['anirudh'] },
+    { name: 'Arijit Singh',      img: 'Images/singers/arijit_singh.jpg',      keys: ['arijit', 'arijit singh'] },
+    { name: 'Bruno Mars',        img: 'Images/singers/bruno_mars.jpg',        keys: ['bruno mars'] },
+    { name: 'BTS',               img: 'Images/singers/bts.jpg',               keys: ['bts'] },
+    { name: 'Taylor Swift',      img: 'Images/singers/taylor_swift.jpg',      keys: ['taylor swift', 'taylor'] },
+    { name: 'Sabrina Carpenter', img: 'Images/singers/sabrina_carpenter.jpg', keys: ['sabrina carpenter', 'sabrina'] }
+];
+
+function getSingerPrefsKey(u) { return `wavify_singerprefs_${u}`; }
+function getSingerPrefs(u) {
+    try { return JSON.parse(localStorage.getItem(getSingerPrefsKey(u))) || []; } catch { return []; }
+}
+function saveSingerPrefs(u, prefs) {
+    localStorage.setItem(getSingerPrefsKey(u), JSON.stringify(prefs));
+}
+
+function openSingerPref() {
+    if (!currentUser) return;
+    const overlay = document.getElementById('singerPrefOverlay');
+    const grid = document.getElementById('singerPrefGrid');
+    const saved = getSingerPrefs(currentUser);
+    grid.innerHTML = '';
+    SINGERS.forEach(singer => {
+        const card = document.createElement('div');
+        card.className = 'singer-card';
+        if (saved.includes(singer.name)) card.classList.add('selected');
+        card.innerHTML = `<img src="${singer.img}" alt="${singer.name}"><span>${singer.name}</span>`;
+        card.addEventListener('click', () => card.classList.toggle('selected'));
+        grid.appendChild(card);
+    });
+    overlay.classList.remove('hidden');
+}
+
+document.getElementById('singerPrefDone').addEventListener('click', () => {
+    const selected = Array.from(document.querySelectorAll('.singer-card.selected'))
+        .map(c => c.querySelector('span').innerText);
+    if (selected.length === 0) { alert('Pick at least one artist!'); return; }
+    saveSingerPrefs(currentUser, selected);
+    document.getElementById('singerPrefOverlay').classList.add('hidden');
+    renderRecommended(selected);
+});
+
+document.getElementById('singerPrefOverlay').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('singerPrefOverlay'))
+        document.getElementById('singerPrefOverlay').classList.add('hidden');
+});
+
+document.getElementById('singerPrefClose').addEventListener('click', () => {
+    document.getElementById('singerPrefOverlay').classList.add('hidden');
+});
+
+document.getElementById('artistsBtn').addEventListener('click', () => {
+    if (!currentUser) { authModal.classList.add('active'); return; }
+    openSingerPref();
+});
+
+function renderRecommended(selectedNames) {
+    const grid = document.getElementById('recommendedGrid');
+    if (!grid) return;
+    // collect songs matching selected singers
+    const matched = [];
+    selectedNames.forEach(name => {
+        const singer = SINGERS.find(s => s.name === name);
+        if (!singer) return;
+        songs.forEach((song, idx) => {
+            const des = song.songDes.toLowerCase();
+            const sname = song.songName.toLowerCase();
+            if (singer.keys.some(k => des.includes(k) || sname.includes(k))) {
+                if (!matched.find(m => m.idx === idx)) matched.push({ song, idx });
+            }
+        });
+    });
+    // fallback: show songs 7-13 if no matches
+    const toShow = matched.length > 0 ? matched : songs.slice(6, 13).map((song, i) => ({ song, idx: i + 6 }));
+    grid.innerHTML = toShow.map(({ song, idx }) => `
+        <div class="music-card">
+            <img src="${song.songImage}" alt="">
+            <button class="card-like-btn fa-regular fa-heart" data-idx="${idx}"></button>
+            <div class="music-play-btn"><i id="${idx + 1}" class="playMusic fa-solid fa-circle-play"></i></div>
+            <div class="img-title">${song.songName}</div>
+            <div class="img-description">${song.songDes}</div>
+        </div>`).join('');
+    // wire play buttons
+    grid.querySelectorAll('.playMusic').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const i = parseInt(btn.id);
+            currentSong = i;
+            order = [...songs];
+            playSong(i);
+        });
+    });
+    // wire like buttons
+    grid.querySelectorAll('.card-like-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleLike(songs[parseInt(btn.dataset.idx)], btn);
+        });
+    });
+    syncAllHearts();
+}
+
+
 document.querySelectorAll('.card-like-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
