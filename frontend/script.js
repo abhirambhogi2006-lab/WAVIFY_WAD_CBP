@@ -30,12 +30,14 @@ play.addEventListener('click', () => {
 audio.addEventListener('timeupdate', () => {
     let progress = (audio.currentTime / audio.duration) * 100;
     progressBar.value = progress;
-    progressBar.style.background = `linear-gradient(to right, #21a600ff ${progress}%, #333 ${progress}%)`;
+    const accent = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#1db954';
+    progressBar.style.background = `linear-gradient(to right, ${accent} ${progress}%, #333 ${progress}%)`;
 })
 
 progressBar.addEventListener('input', function () {
     let value = this.value;
-    this.style.background = `linear-gradient(to right, #21a600ff ${value}%, #333 ${value}%)`;
+    const accent = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#1db954';
+    this.style.background = `linear-gradient(to right, ${accent} ${value}%, #333 ${value}%)`;
     audio.currentTime = (progressBar.value * audio.duration) / 100;
 });
 
@@ -59,6 +61,7 @@ document.querySelector('.main-right-part').addEventListener('click', (e) => {
 
     index = parseInt(btn.id);
     currentSong = index;
+    order = [...songs];
     audio.src = `Audio/${index}.mp3`;
     audio.currentTime = 0;
     audio.play();
@@ -851,13 +854,14 @@ function drawVisualizer() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    const accent = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#1db954';
     const barWidth = (canvas.width / bufferLength) * 2.2;
     let x = 0;
 
     for (let i = 0; i < bufferLength; i++) {
         const barHeight = (dataArray[i] / 255) * canvas.height * 0.85;
-        const green = 166 + Math.floor((dataArray[i] / 255) * 89);
-        ctx.fillStyle = `rgba(33, ${green}, 0, 0.45)`;
+        const alpha = 0.35 + (dataArray[i] / 255) * 0.55;
+        ctx.fillStyle = hexToRgba(accent, alpha);
         ctx.beginPath();
         ctx.roundRect(x, canvas.height - barHeight, barWidth - 2, barHeight, 3);
         ctx.fill();
